@@ -1,0 +1,113 @@
+﻿@model List<Category>
+
+<h2>Data Binding Example</h2>
+
+<div>
+    <input type="text" id="dataInputById" />
+    <button id="fetchDataId">Fetch Data Id</button>
+</div>
+
+<div>
+    <p>Fetched DataById: <span id="fetchDataIdResult"></span></p>
+</div>
+
+<div>
+    <input type="text" id="dataInput" />
+    <button id="fetchData">Fetch Data</button>
+</div>
+
+<div>
+    <p>Fetched Data:</p>
+    <ul id="fetchedDataList"></ul>
+</div>
+
+<div>
+    <h2>Save Data</h2>
+    <input type="text" id="saveDataInput" />
+    <button id="saveData">Save Data</button>
+</div>
+
+<div>
+    <h3>Response Headers:</h3>
+    <p>Action Name: <span id="actionName"></span></p>
+    <p>HTTP Method: <span id="httpMethod"></span></p>
+    <p>HTTP Scheme: <span id="httpScheme"></span></p>
+    <p>Host: <span id="host"></span></p>
+    <p>Port: <span id="port"></span></p>
+    <p>Time Taken: <span id="timeTaken"></span> ms</p>
+    <p>Server Date and Time: <span id="serverDateTime"></span></p>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        function processResponseHeaders(xhr) {
+            $("#actionName").text(xhr.getResponseHeader("Action-Name"));
+            $("#httpMethod").text(xhr.getResponseHeader("HTTP-Method"));
+            $("#httpScheme").text(xhr.getResponseHeader("HTTP-Scheme"));
+            $("#host").text(xhr.getResponseHeader("Host"));
+            $("#port").text(xhr.getResponseHeader("Port"));
+            $("#timeTaken").text(xhr.getResponseHeader("Time-Taken"));
+            $("#serverDateTime").text(xhr.getResponseHeader("Server-Date-Time"));
+        }
+
+        // GetDataById
+        $("#fetchDataId").click(function () {
+            var id = $("#dataInputById").val();
+            $.ajax({
+                type: "GET",
+                url: "/DataBinding/GetDataById?id=" + id,
+                success: function (data, textStatus, xhr) {
+                    $("#dataInputById").val(data);
+                    $("#fetchDataIdResult").text(data);
+                    processResponseHeaders(xhr);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                }
+            });
+        });
+
+        // GetData
+        $("#fetchData").click(function () {
+            $.ajax({
+                type: "GET",
+                url: "/DataBinding/GetData",
+                success: function (data, textStatus, xhr) {
+                    var resultHtml = "";
+                    data.forEach(function (category) {
+                        resultHtml += "<li>" + category.name + "</li>";
+                    });
+                    $("#fetchedDataList").html(resultHtml);
+                    processResponseHeaders(xhr);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                }
+            });
+        });
+
+        // SaveData
+        $("#saveData").click(function () {
+            var dataToSave = $("#saveDataInput").val();
+            var category = { name: dataToSave };
+
+            $.ajax({
+                type: "POST",
+                url: "/DataBinding/SaveData",
+                data: category,
+                success: function (result, textStatus, xhr) {
+                    if (result) {
+                        alert("Data saved successfully");
+                    } else {
+                        alert("Data save failed");
+                    }
+                    processResponseHeaders(xhr);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                }
+            });
+        });
+    });
+
+</script>
+
