@@ -4,17 +4,17 @@ using System.Diagnostics;
 
 namespace InterceptorFilterDataBinding.Models
 {
-    public class ResponseInterceptorFilter : ActionFilterAttribute
+    public class ResponseInterceptorFilter : IActionFilter
     {
         private Stopwatch stopwatch;
 
-        public override void OnActionExecuting(ActionExecutingContext context)
+        public void OnActionExecuting(ActionExecutingContext context)
         {
             stopwatch = new Stopwatch();
             stopwatch.Start();
         }
 
-        public override void OnActionExecuted(ActionExecutedContext context)
+        public void OnActionExecuted(ActionExecutedContext context)
         {
             stopwatch.Stop();
 

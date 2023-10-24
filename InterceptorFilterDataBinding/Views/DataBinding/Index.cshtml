@@ -32,11 +32,12 @@
     <button id="saveData">Save Data</button>
 </div>
 <div>
-<form class="mt-3" id="saveDataForm" method="post" enctype="multipart/form-data">
-    @Html.AntiForgeryToken()
-    <input type="text" name="Name" />
-    <button type="submit">SaveDataByForm</button>
-</form>
+    <form class="mt-3" id="saveDataForm" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <input type="text" name="Name" />
+        <button type="submit">SaveDataByForm</button>
+    </form>
+
 </div>
 
 
@@ -143,16 +144,14 @@
             });
         });
 
+        // FromForm
         $("#saveDataForm").submit(function (e) {
             e.preventDefault();
-            var formData = new FormData(this);
 
             $.ajax({
                 type: "POST",
                 url: "/DataBinding/SaveDataByForm",
-                data: formData,
-                contentType: false, 
-                processData: false, 
+                data: $(this).serialize(), 
                 success: function (result, textStatus, xhr) {
                     if (result) {
                         alert("Data saved successfully");
@@ -165,6 +164,7 @@
                 }
             });
         });
+
 
     });
 
