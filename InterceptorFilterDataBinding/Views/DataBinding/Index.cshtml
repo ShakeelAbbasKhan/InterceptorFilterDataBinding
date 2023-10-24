@@ -1,6 +1,4 @@
-﻿@model List<Category>
-
-<h2>Data Binding Example</h2>
+﻿<h2>Data Binding Example</h2>
 
 <div>
     <input type="text" id="dataInputById" />
@@ -19,13 +17,28 @@
 <div>
     <p>Fetched Data:</p>
     <ul id="fetchedDataList"></ul>
+
 </div>
+
+<h2>Delete Data</h2>
+<form id="deleteDataForm">
+    <input type="number" id="deleteDataIdInput" name="id" placeholder="Enter ID to delete" />
+    <button type="button" id="deleteDataButton">Delete Data</button>
+</form>
 
 <div>
     <h2>Save Data</h2>
     <input type="text" id="saveDataInput" />
     <button id="saveData">Save Data</button>
 </div>
+<div>
+<form class="mt-3" id="saveDataForm" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input type="text" name="Name" />
+    <button type="submit">SaveDataByForm</button>
+</form>
+</div>
+
 
 <div>
     <h3>Response Headers:</h3>
@@ -57,7 +70,7 @@
             var id = $("#dataInputById").val();
             $.ajax({
                 type: "GET",
-                url: "/DataBinding/GetDataById?id=" + id,
+                url: "/DataBinding/GetDataById/" + id,
                 success: function (data, textStatus, xhr) {
                     $("#dataInputById").val(data);
                     $("#fetchDataIdResult").text(data);
@@ -65,6 +78,25 @@
                 },
                 error: function (xhr, textStatus, errorThrown) {
                 }
+            });
+        });
+
+        // Delete Data
+        $(document).ready(function () {
+            $("#deleteDataButton").click(function () {
+                var idToDelete = $("#deleteDataIdInput").val();
+
+                $.ajax({
+                    type: "DELETE",
+                    url: "/DataBinding/DeleteData?id=" + idToDelete,
+                    success: function (result, textStatus, xhr) {
+                        alert(result);
+                        processResponseHeaders(xhr); 
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        alert("Error: " + errorThrown);
+                    }
+                });
             });
         });
 
@@ -94,7 +126,33 @@
             $.ajax({
                 type: "POST",
                 url: "/DataBinding/SaveData",
-                data: category,
+                data: JSON.stringify(category), 
+                contentType: "application/json", 
+                success: function (result, textStatus, xhr) {
+                    if (result) {
+                        alert("Data saved successfully");
+                    } else {
+                        alert("Data save failed");
+                    }
+                    processResponseHeaders(xhr);
+
+                    $("#saveDataInput").val('');
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                }
+            });
+        });
+
+        $("#saveDataForm").submit(function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+
+            $.ajax({
+                type: "POST",
+                url: "/DataBinding/SaveDataByForm",
+                data: formData,
+                contentType: false, 
+                processData: false, 
                 success: function (result, textStatus, xhr) {
                     if (result) {
                         alert("Data saved successfully");
@@ -107,6 +165,7 @@
                 }
             });
         });
+
     });
 
 </script>

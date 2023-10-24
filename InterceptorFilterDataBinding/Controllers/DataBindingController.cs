@@ -17,7 +17,7 @@ namespace InterceptorFilterDataBinding.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetDataById(int id)
+        public IActionResult GetDataById([FromRoute] int id)
         {
 
             var data = $"Data from source with ID: {id}";
@@ -25,19 +25,45 @@ namespace InterceptorFilterDataBinding.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetData()
+        public async Task<IActionResult> GetData()
         {
             var data = _context.Categories.ToList();
+          //  Task.Delay(10000).Wait();
             return Json(data);
         }
 
         [HttpPost]
-        public IActionResult SaveData(Category category)
+        public IActionResult SaveData([FromBody] Category category)
         {
 
             var data = _context.Add(category);
             _context.SaveChanges();
             return Json(category);
         }
+
+        [HttpPost]
+        public IActionResult SaveDataByForm([FromForm] Category category)
+        {
+            var data = _context.Add(category);
+            _context.SaveChanges();
+
+            return Json(category);
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteData([FromQuery] int id)
+        {
+            var dataToDelete = _context.Categories.FirstOrDefault(u => u.Id == id);
+            if (dataToDelete != null)
+            {
+                _context.Categories.Remove(dataToDelete);
+                _context.SaveChanges();
+                return Json("Data deleted successfully.");
+            }
+
+            return Json("Data not found or could not be deleted.");
+        }
+
+
     }
 }

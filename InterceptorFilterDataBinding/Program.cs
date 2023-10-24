@@ -1,15 +1,21 @@
 using InterceptorFilterDataBinding.Middleware;
 using InterceptorFilterDataBinding.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 // configure connection
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<ResponseInterceptorFilter>();
+});
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+// Add services to the container.
+
 
 var app = builder.Build();
 
@@ -21,7 +27,9 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseMiddleware<ResponseInterceptorMiddleware>();
+//app.UseMiddleware<ResponseInterceptorMiddleware>();
+
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -29,6 +37,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
 
 app.MapControllerRoute(
     name: "default",
